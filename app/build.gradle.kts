@@ -74,4 +74,12 @@ dependencies {
 
     // ✅ Hilt with ViewModel support
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+
+    // Room Annotation Processor
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // Optional Room Kotlin Extensions
+    implementation("androidx.room:room-ktx:2.6.1")
 }

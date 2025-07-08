@@ -20,6 +20,7 @@ import com.app.randomString.viewmodel.RandomStringUiState
 import com.app.randomString.viewmodel.RandomStringViewModel
 
 data class RandomStringDisplay(
+
     val value: String,
     val length: Int,
     val created: String
