@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             RandomStringTaskTheme {
                 Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = "Androidxx",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
