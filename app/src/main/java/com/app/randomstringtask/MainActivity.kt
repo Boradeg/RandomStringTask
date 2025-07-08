@@ -1,6 +1,8 @@
 package com.app.randomstringtask
 
+import android.net.wifi.hotspot2.pps.HomeSp
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,11 +17,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
+import com.app.randomString.viewmodel.RandomStringViewModel
 import com.app.randomstringtask.ui.theme.RandomStringTaskTheme
+import com.app.randomstringtask.ui.theme.Repository.RandomStringProvider
+import com.app.randomstringtask.ui.theme.Screen.HomePage
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -29,50 +38,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
         setContent {
-
             RandomStringTaskTheme {
-                val message by viewModel.message.collectAsState()
-
-                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
-                    Greeting(
-                        name = message,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                HomePage(viewModel)
             }
         }
-    }
-}
-@HiltViewModel
-class RandomStringViewModel @Inject constructor(
-    private val repository: RandomStringRepository
-) : ViewModel() {
 
-    private val _message = MutableStateFlow("")
-    val message: StateFlow<String> = _message
-
-    init {
-        _message.value = repository.getData()
-    }
-}
-class RandomStringRepository @Inject constructor() {
-    fun getData(): String {
-        return "Hello from Repository"
-    }
-}
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RandomStringTaskTheme {
-        Greeting("Android")
     }
 }
