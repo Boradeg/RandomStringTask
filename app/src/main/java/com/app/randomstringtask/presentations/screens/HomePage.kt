@@ -37,7 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.app.randomString.viewmodel.RandomStringUiState
+import com.app.randomstringtask.presentations.modal.RandomStringUiState
 import com.app.randomString.viewmodel.RandomStringViewModel
 import com.app.randomstringtask.R
 import com.app.randomstringtask.presentations.modal.RandomStringDisplay
@@ -50,7 +50,7 @@ fun HomePage(viewModel: RandomStringViewModel) {
     val context = LocalContext.current
     var length by remember { mutableStateOf("10") }
 
-    // Error toast
+
     LaunchedEffect(uiState) {
         if (uiState is RandomStringUiState.Error) {
             Toast.makeText(context, (uiState as RandomStringUiState.Error).message, Toast.LENGTH_SHORT).show()

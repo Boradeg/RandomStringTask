@@ -3,24 +3,21 @@ package com.app.randomstringtask.Data.provider
 
 import android.content.ContentResolver
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import com.app.randomstringtask.presentations.modal.RandomStringDisplayFetch
+import com.app.randomstringtask.Data.mapper.RandomStringForData
+import com.app.randomstringtask.utils.Constants
 import org.json.JSONObject
 
 object RandomStringProvider {
-    private const val AUTHORITY = "com.iav.contestdataprovider"
-    private const val PATH = "text"
-    private val CONTENT_URI = Uri.parse("content://$AUTHORITY/$PATH")
 
-    fun getRandomString(context: Context, maxLength: Int = 8): RandomStringDisplayFetch? {
+    fun getRandomString(context: Context, maxLength: Int = 8): RandomStringForData? {
         return try {
             val bundle = Bundle().apply {
                 putInt(ContentResolver.QUERY_ARG_LIMIT, maxLength)
             }
             val cursor = context.contentResolver.query(
-                CONTENT_URI,
+               Constants.CONTENT_URI,
                 null,
                 bundle,
                 null
@@ -34,7 +31,7 @@ object RandomStringProvider {
                     val value = json.getString("value")
                     val length = json.getInt("length")
                     val created = json.getString("created")
-                    return RandomStringDisplayFetch(value, length, created)
+                    return RandomStringForData(value, length, created)
                 }
             }
             null
