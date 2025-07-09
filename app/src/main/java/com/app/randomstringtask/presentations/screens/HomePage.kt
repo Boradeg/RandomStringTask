@@ -30,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,8 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.app.randomString.viewmodel.RandomStringUiState
 import com.app.randomString.viewmodel.RandomStringViewModel
-import com.app.randomstringtask.Data.local.AppDatabase
-import com.app.randomstringtask.Data.local.RandomStringDao
 import com.app.randomstringtask.R
 import com.app.randomstringtask.presentations.modal.RandomStringDisplay
 
@@ -49,17 +46,14 @@ import com.app.randomstringtask.presentations.modal.RandomStringDisplay
 fun HomePage(viewModel: RandomStringViewModel) {
 
     val uiState by viewModel.uiState.collectAsState()
-    val uiStateGetData by viewModel.uiStateGetData.collectAsState()
-
+    val allItems by viewModel.allItems.collectAsState()
     val context = LocalContext.current
     var length by remember { mutableStateOf("10") }
 
-
+    // Error toast
     LaunchedEffect(uiState) {
-        if (uiState is RandomStringUiState.Error || uiStateGetData is RandomStringUiState.Error) {
-            Toast
-                .makeText(context, (uiState as RandomStringUiState.Error).message, Toast.LENGTH_SHORT)
-                .show()
+        if (uiState is RandomStringUiState.Error) {
+            Toast.makeText(context, (uiState as RandomStringUiState.Error).message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -70,7 +64,7 @@ fun HomePage(viewModel: RandomStringViewModel) {
                 .padding(padding)
         ) {
             RandomStringScreen(
-                uiState = uiStateGetData,
+                items = allItems,
                 maxLength = length,
                 onMaxLengthChange = { length = it },
                 onGenerateClick = {
@@ -81,8 +75,12 @@ fun HomePage(viewModel: RandomStringViewModel) {
                 onDeleteAllClick = { viewModel.clearAll() }
             )
 
+
             if (uiState is RandomStringUiState.Loading) {
-                Box(modifier = Modifier.align(Alignment.Center), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
             }
@@ -91,9 +89,11 @@ fun HomePage(viewModel: RandomStringViewModel) {
 }
 
 
+
+
 @Composable
 fun RandomStringScreen(
-    uiState: RandomStringUiState,
+    items: List<RandomStringDisplay>,
     maxLength: String,
     onMaxLengthChange: (String) -> Unit,
     onGenerateClick: () -> Unit,
@@ -104,7 +104,6 @@ fun RandomStringScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-
     ) {
         OutlinedTextField(
             value = maxLength,
@@ -125,55 +124,60 @@ fun RandomStringScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (uiState) {
-            is RandomStringUiState.Success -> {
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(uiState.data) { item ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            elevation = CardDefaults.cardElevation(4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(stringResource(R.string.txt_value, item.value))
-                                    Text(stringResource(R.string.txt_length, item.length))
-                                    Text(stringResource(R.string.txt_created, item.created))
-                                }
-                                IconButton(onClick = { onDeleteClick(item) }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = stringResource(R.string.txt_delete)
-                                    )
-                                }
-                            }
-                        }
-                    }
+        if (items.isEmpty()) {
+            Text(
+                text = stringResource(R.string.txt_no_data_available_yet),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(items) { item ->
+                    RandomStringItem(item, onDeleteClick)
                 }
+            }
 
-                Button(
-                    onClick = onDeleteAllClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
-                ) {
-                    Text(stringResource(R.string.txt_delete_all))
-                }
+            Button(
+                onClick = onDeleteAllClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            ) {
+                Text(stringResource(R.string.txt_delete_all))
             }
-            is RandomStringUiState.Empty -> {
-                Text(
-                    text = stringResource(R.string.txt_no_data_available_yet),
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            else -> Unit
         }
     }
 }
+@Composable
+fun RandomStringItem(
+    item: RandomStringDisplay,
+    onDeleteClick: (RandomStringDisplay) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.txt_value, item.value))
+                Text(stringResource(R.string.txt_length, item.length))
+                Text(stringResource(R.string.txt_created, item.created))
+            }
+            IconButton(onClick = { onDeleteClick(item) }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.txt_delete)
+                )
+            }
+        }
+    }
+}
+
+
