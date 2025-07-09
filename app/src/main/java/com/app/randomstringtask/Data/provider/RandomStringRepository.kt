@@ -6,7 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import com.app.randomstringtask.presentations.modal.RandomStringDisplay
+import com.app.randomstringtask.presentations.modal.RandomStringDisplayFetch
 import org.json.JSONObject
 
 object RandomStringProvider {
@@ -14,7 +14,7 @@ object RandomStringProvider {
     private const val PATH = "text"
     private val CONTENT_URI = Uri.parse("content://$AUTHORITY/$PATH")
 
-    fun getRandomString(context: Context, maxLength: Int = 8): RandomStringDisplay? {
+    fun getRandomString(context: Context, maxLength: Int = 8): RandomStringDisplayFetch? {
         return try {
             val bundle = Bundle().apply {
                 putInt(ContentResolver.QUERY_ARG_LIMIT, maxLength)
@@ -34,7 +34,7 @@ object RandomStringProvider {
                     val value = json.getString("value")
                     val length = json.getInt("length")
                     val created = json.getString("created")
-                    return RandomStringDisplay(value, length, created)
+                    return RandomStringDisplayFetch(value, length, created)
                 }
             }
             null

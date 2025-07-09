@@ -5,6 +5,7 @@ import com.app.randomstringtask.Data.local.RandomStringEntity
 import com.app.randomstringtask.Data.mapper.toEntity
 import com.app.randomstringtask.domain.Repository.RandomStringRepository
 import com.app.randomstringtask.presentations.modal.RandomStringDisplay
+import com.app.randomstringtask.presentations.modal.RandomStringDisplayFetch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -17,6 +18,7 @@ class RandomStringRepositoryImpl @Inject constructor(
         return dao.observeAllRandomStrings().map { list ->
             list.map {
                 RandomStringDisplay(
+                    id = it.id,
                     value = it.value,
                     length = it.length,
                     created = it.created
@@ -25,18 +27,12 @@ class RandomStringRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun insert(item: RandomStringDisplay) {
-        dao.insert(item.toEntity())
+    override suspend fun deleteRandomString(item: RandomStringEntity) {
+        dao.deleteById(item.id)
     }
 
-    override suspend fun deleteRandomString(item: RandomStringEntity) {
-        dao.deleteRandomString(
-            RandomStringEntity(
-                value = item.value,
-                length = item.length,
-                created = item.created
-            )
-        )
+    override suspend fun insert(item: RandomStringDisplayFetch) {
+        dao.insert(item.toEntity())
     }
 
     override suspend fun deleteAllRandomStrings() {

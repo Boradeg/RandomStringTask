@@ -30,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +40,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.app.randomString.viewmodel.RandomStringUiState
 import com.app.randomString.viewmodel.RandomStringViewModel
+import com.app.randomstringtask.Data.local.AppDatabase
+import com.app.randomstringtask.Data.local.RandomStringDao
 import com.app.randomstringtask.R
 import com.app.randomstringtask.presentations.modal.RandomStringDisplay
 
 @Composable
 fun HomePage(viewModel: RandomStringViewModel) {
+
     val uiState by viewModel.uiState.collectAsState()
     val uiStateGetData by viewModel.uiStateGetData.collectAsState()
+
     val context = LocalContext.current
     var length by remember { mutableStateOf("10") }
 
@@ -99,7 +104,7 @@ fun RandomStringScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            //.statusBarsPadding()
+
     ) {
         OutlinedTextField(
             value = maxLength,

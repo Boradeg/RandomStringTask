@@ -16,8 +16,9 @@ interface RandomStringDao {
     @Query("SELECT * FROM random_strings ORDER BY id DESC")
       fun observeAllRandomStrings(): Flow<List<RandomStringEntity>>
 
-    @Delete
-    suspend fun deleteRandomString(entity: RandomStringEntity)
+    @Query("DELETE FROM random_strings WHERE id = :id")
+    suspend fun deleteById(id: Int)
+
 
     @Query("DELETE FROM random_strings")
     suspend fun deleteAll()

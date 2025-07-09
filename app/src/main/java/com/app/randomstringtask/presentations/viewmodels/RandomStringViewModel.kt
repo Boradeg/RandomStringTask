@@ -29,6 +29,7 @@ sealed class RandomStringUiState {
     data class Error(val message: String) : RandomStringUiState()
     data object Empty : RandomStringUiState()
 }
+
 @HiltViewModel
 class RandomStringViewModel @Inject constructor(
     private val fetchRandomStringUseCase: FetchRandomStringUseCase,
