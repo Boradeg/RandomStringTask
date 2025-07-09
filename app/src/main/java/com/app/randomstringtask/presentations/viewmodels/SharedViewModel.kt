@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class RandomStringViewModel @Inject constructor(
+class SharedViewModel @Inject constructor(
     private val fetchRandomStringUseCase: FetchRandomStringUseCase,
     private val insertUseCase: InsertRandomStringUseCase,
     private val observeUseCase: ObserveRandomStringsUseCase,

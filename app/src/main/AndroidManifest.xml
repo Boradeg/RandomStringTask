@@ -15,7 +15,7 @@
         android:theme="@style/Theme.RandomStringTask"
         tools:targetApi="31" >
         <activity
-            android:name=".mainactivity.MainActivity"
+            android:name=".presentations.mainactivity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.RandomStringTask" >

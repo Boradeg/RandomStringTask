@@ -3,9 +3,11 @@
     <string name="txt_generate">Generate</string>
     <string name="txt_value">Value: %1$s</string>
     <string name="txt_length">Length: %1$s</string>
-    <string name="txt_created">Created: %1$s</string>
+    <string name="txt_created">Created(Local time) - %1$s</string>
     <string name="txt_delete">Delete</string>
     <string name="txt_delete_all">Delete All</string>
     <string name="txt_no_data_available_yet">No data available yet.</string>
     <string name="txt_enter_max_length">Enter max length</string>
+    <string name="txt_please_insert_valid_number">Please insert valid number</string>
+    <string name="txt_welcome">Welcome ...</string>
 </resources>

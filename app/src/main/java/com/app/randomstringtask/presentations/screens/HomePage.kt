@@ -37,18 +37,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.app.randomstringtask.presentations.modal.RandomStringUiState
-import com.app.randomString.viewmodel.RandomStringViewModel
+import com.app.randomString.viewmodel.SharedViewModel
 import com.app.randomstringtask.R
 import com.app.randomstringtask.presentations.modal.RandomStringDisplay
+import com.app.randomstringtask.utils.convertIsoToFormatted
+import com.app.randomstringtask.utils.toSafeIntOrNull
 
 @Composable
-fun HomePage(viewModel: RandomStringViewModel) {
+fun HomePage(viewModel: SharedViewModel, navController: NavController) {
 
     val uiState by viewModel.uiState.collectAsState()
     val allItems by viewModel.allItems.collectAsState()
     val context = LocalContext.current
-    var length by remember { mutableStateOf("10") }
+    var length by remember { mutableStateOf("") }
 
 
     LaunchedEffect(uiState) {
@@ -68,8 +71,16 @@ fun HomePage(viewModel: RandomStringViewModel) {
                 maxLength = length,
                 onMaxLengthChange = { length = it },
                 onGenerateClick = {
-                    val len = length.toIntOrNull() ?: 10
-                    viewModel.fetchRandomString(context, len)
+                    val number = length.toSafeIntOrNull()
+                    if (number != null) {
+                        viewModel.fetchRandomString(context, number)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.txt_please_insert_valid_number),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
                 },
                 onDeleteClick = { viewModel.deleteString(it) },
                 onDeleteAllClick = { viewModel.clearAll() }
@@ -91,6 +102,7 @@ fun HomePage(viewModel: RandomStringViewModel) {
 
 
 
+
 @Composable
 fun RandomStringScreen(
     items: List<RandomStringDisplay>,
@@ -108,7 +120,9 @@ fun RandomStringScreen(
         OutlinedTextField(
             value = maxLength,
             onValueChange = onMaxLengthChange,
+
             label = { Text(stringResource(R.string.txt_enter_max_length)) },
+
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
@@ -168,7 +182,7 @@ fun RandomStringItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.txt_value, item.value))
                 Text(stringResource(R.string.txt_length, item.length))
-                Text(stringResource(R.string.txt_created, item.created))
+                Text(stringResource(R.string.txt_created, convertIsoToFormatted(item.created)))
             }
             IconButton(onClick = { onDeleteClick(item) }) {
                 Icon(
