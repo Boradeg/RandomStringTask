@@ -17,6 +17,8 @@ A modern Android app built with **Jetpack Compose**, **MVVM**, and **Clean Archi
 
 ---
 
+
+
 ## 🧱 Project Structure
 
 - **com.app.randomstringtask**
@@ -44,4 +46,11 @@ A modern Android app built with **Jetpack Compose**, **MVVM**, and **Clean Archi
   - **utils**
     - RandomStringProvider.kt
   - **Application.kt** → Hilt app class
+
+
+### 🟢 Home Screen
+
+<img src="https://github.com/user-attachments/assets/c046c036-7c2c-4a6e-bf59-12b4ba51b976" alt="Home Screen" width="300"/>
+
+
 
