@@ -1,4 +1,4 @@
-package com.app.randomstringtask.ui.theme
+package com.app.randomstringtask
 
 import dagger.hilt.android.HiltAndroidApp
 

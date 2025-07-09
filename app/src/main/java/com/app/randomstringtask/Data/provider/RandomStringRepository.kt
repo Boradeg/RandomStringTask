@@ -1,4 +1,4 @@
-package com.app.randomstringtask.ui.theme.Repository
+package com.app.randomstringtask.Data.provider
 
 
 import android.content.ContentResolver
@@ -6,12 +6,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import com.app.randomstringtask.ui.theme.Screen.RandomStringDisplay
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.app.randomstringtask.presentations.modal.RandomStringDisplay
 import org.json.JSONObject
-
-
 
 object RandomStringProvider {
     private const val AUTHORITY = "com.iav.contestdataprovider"
@@ -23,7 +19,6 @@ object RandomStringProvider {
             val bundle = Bundle().apply {
                 putInt(ContentResolver.QUERY_ARG_LIMIT, maxLength)
             }
-
             val cursor = context.contentResolver.query(
                 CONTENT_URI,
                 null,
@@ -39,8 +34,6 @@ object RandomStringProvider {
                     val value = json.getString("value")
                     val length = json.getInt("length")
                     val created = json.getString("created")
-                    Log.d("TAG","$value")
-
                     return RandomStringDisplay(value, length, created)
                 }
             }

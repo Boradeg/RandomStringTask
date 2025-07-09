@@ -1,4 +1,4 @@
-package com.app.randomstringtask.ui.theme
+package com.app.randomstringtask.presentations.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -4,14 +4,14 @@ package com.app.randomString.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.randomstringtask.ui.theme.Screen.RandomStringDisplay
-import com.app.randomstringtask.ui.theme.UseCases.DeleteAllRandomStringsUseCase
-import com.app.randomstringtask.ui.theme.UseCases.DeleteRandomStringUseCase
-import com.app.randomstringtask.ui.theme.UseCases.FetchRandomStringUseCase
-import com.app.randomstringtask.ui.theme.UseCases.InsertRandomStringUseCase
-import com.app.randomstringtask.ui.theme.UseCases.ObserveRandomStringsUseCase
+import com.app.randomstringtask.presentations.modal.RandomStringDisplay
+import com.app.randomstringtask.domain.UseCases.DeleteAllRandomStringsUseCase
+import com.app.randomstringtask.domain.UseCases.DeleteRandomStringUseCase
+import com.app.randomstringtask.domain.UseCases.FetchRandomStringUseCase
+import com.app.randomstringtask.domain.UseCases.InsertRandomStringUseCase
+import com.app.randomstringtask.domain.UseCases.ObserveRandomStringsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,10 +19,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 sealed class RandomStringUiState {
     data object Loading : RandomStringUiState()
+    data object IDLE : RandomStringUiState()
     data class Success(val data: List<RandomStringDisplay>) : RandomStringUiState()
     data class Error(val message: String) : RandomStringUiState()
     data object Empty : RandomStringUiState()
@@ -38,20 +40,23 @@ class RandomStringViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<RandomStringUiState>(RandomStringUiState.Empty)
     val uiState: StateFlow<RandomStringUiState> = _uiState.asStateFlow()
+
+    private val _uiStateGetData = MutableStateFlow<RandomStringUiState>(RandomStringUiState.Empty)
+    val uiStateGetData : StateFlow<RandomStringUiState> = _uiStateGetData.asStateFlow()
+
     init {
         observeAllStringsFromRoom()
     }
 
     private fun observeAllStringsFromRoom() {
-        observeUseCase()
-            .onEach { list ->
-                _uiState.value = if (list.isEmpty()) {
+        observeUseCase().onEach { list ->
+            _uiStateGetData.value = if (list.isEmpty()) {
                     RandomStringUiState.Empty
                 } else {
                     RandomStringUiState.Success(list)
                 }
             }
-            .catch { e -> _uiState.value = RandomStringUiState.Error(e.message ?: "Unknown Error") }
+            .catch { e -> _uiStateGetData.value = RandomStringUiState.Error(e.message ?: "Unknown Error") }
             .launchIn(viewModelScope)
     }
 
@@ -59,12 +64,15 @@ class RandomStringViewModel @Inject constructor(
     fun fetchRandomString(context: Context, maxLength: Int) {
         viewModelScope.launch {
             _uiState.value = RandomStringUiState.Loading
-
-            val result = fetchRandomStringUseCase(context, maxLength)
+            val result = withContext(Dispatchers.IO) {
+                fetchRandomStringUseCase(context, maxLength)
+            }
             if (result != null) {
                 insertUseCase(result) // ✅ This will automatically update Room Flow
+                _uiState.value= RandomStringUiState.IDLE
                 // No need to update _uiState manually — Room observer will trigger
             } else {
+               // observeAllStringsFromRoom()
                 _uiState.value = RandomStringUiState.Error("Failed to fetch random string")
             }
         }

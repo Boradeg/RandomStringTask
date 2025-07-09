@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">RandomStringTask</string>
+    <string name="txt_generate">Generate</string>
+    <string name="txt_value">Value: %1$s</string>
+    <string name="txt_length">Length: %1$s</string>
+    <string name="txt_created">Created: %1$s</string>
+    <string name="txt_delete">Delete</string>
+    <string name="txt_delete_all">Delete All</string>
+    <string name="txt_no_data_available_yet">No data available yet.</string>
+    <string name="txt_enter_max_length">Enter max length</string>
 </resources>

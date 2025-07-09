@@ -1,4 +1,4 @@
-package com.app.randomstringtask.ui.theme
+package com.app.randomstringtask.presentations.ui.theme
 
 import android.app.Activity
 import android.os.Build
